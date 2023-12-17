@@ -54,7 +54,12 @@ These steps are taken from a few sources, corrected/edited and combined together
 
 5. Restart the nextcloud jail from your TrueNAS webGUI, then log back into nextcloud `ssh`.
 
-6. This is where we will install and use [acme.sh](https://github.com/acmesh-official/acme.sh) to set up our Let's Encrypt certificate using `TLS-ALPN-01`, which only requires port 443. The guide can be found here, [Let's Encrypt without port 80](https://jmorahan.net/articles/lets-encrypt-without-port-80/). As our nextcloud jail is using nginx, we need to issue the certificate with `service` option:
+6. This is where we will install and use [acme.sh](https://github.com/acmesh-official/acme.sh) to set up our Let's Encrypt certificate using `TLS-ALPN-01`, which only requires port 443. The guide can be found here, [Let's Encrypt without port 80](https://jmorahan.net/articles/lets-encrypt-without-port-80/). UPDATE: acme has moved default CA to ZeroSSL, change the default CA to Let's Encrypt by:
+    ```bash
+    acme.sh --set-default-ca  --server  letsencrypt
+    ```
+    
+    Now, As our nextcloud jail is using nginx, we need to issue the certificate with `service` option:
     ```bash
     acme.sh --issue --alpn --pre-hook 'service nginx stop' --post-hook 'service nginx start' -d example.duckdns.org -w /home/wwwroot/example.duckdns.org
     ```
@@ -73,7 +78,7 @@ These steps are taken from a few sources, corrected/edited and combined together
     b) `ssl_certificate_key`: should be in `/etc/acme.sh/example.duckdns.org-key.pem`.
     We will need these two information in the next step. 
 
-7. Copy the locations of the cert and key. Edit `nextcloud.conf` to enforce HTTPS
+8. Copy the locations of the cert and key. Edit `nextcloud.conf` to enforce HTTPS
     ```bash
     nano /usr/local/etc/nginx/conf.d/nextcloud.conf
     ```
@@ -101,7 +106,7 @@ These steps are taken from a few sources, corrected/edited and combined together
     ```
     Be sure to save the file when finished.
 
-8. We will now add our new DDNS to nextcloud trusted domains.
+9. We will now add our new DDNS to nextcloud trusted domains.
     ```bash
     nano /usr/local/www/nextcloud/config/config.php
     ```
